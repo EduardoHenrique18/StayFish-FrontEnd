@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+import { Table } from 'reactstrap';
+
 import { Link } from 'react-router-dom';
 
 import Header from '../../components/Header';
+import './style.css';
 
 export default class Dashboard extends Component {
 
@@ -14,16 +17,41 @@ export default class Dashboard extends Component {
 
     render() {
         return (
-            <div className= "wrapper">
-                <Header title="Dashboard" />
-                <hr className="my-3" />
-                <p>
-                    <code> logado com sucesso! ^-^  </code>
-                </p>
-                <div className="text-center">
-                    <Link to="/logout" className="btn btn-outline-primary"> Log Out </Link>
-                </div>
-            </div>
-        );
+            <form className = "form">
+            <Table bordered>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Username</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Mark</td>
+                  <td>Otto</td>
+                  <td>@mdo</td>
+                </tr>
+                <tr>
+                  <th scope="row">2</th>
+                  <td>Jacob</td>
+                  <td>Thornton</td>
+                  <td>@fat</td>
+                </tr>
+                <tr>
+                  <th scope="row">3</th>
+                  <td>Larry</td>
+                  <td>the Bird</td>
+                  <td>@twitter</td>
+                </tr>
+              </tbody>
+            </Table> 
+            </form>
+            
+          );
+          
     }
+ 
 }
