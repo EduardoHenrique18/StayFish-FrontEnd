@@ -10,8 +10,7 @@ import Logout from './pages/logout';
 const Routes = () => (
     <Router>
         <Switch>
-            <Route exact path="/" component={Login} />
-            <PrivateRoute path="/admin" component={Dashboard} />
+            <Route path="/" component={Dashboard} />
             <Route exact path="/logout" component={Logout} />
         </Switch>
     </Router>

@@ -1,29 +1,62 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-
-import Header from '../../components/Header';
+import {
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  NavbarBrand,
+  Nav,
+  NavItem,
+  NavLink,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem } from 'reactstrap';
 
 export default class Dashboard extends Component {
-
+    
     constructor() {
         super();
         this.state = {
-            user: {},
+            user: {}, 
+            setCollapsed: false,
+            collapsed: false,
+            isOpen: false
+            
         }
     }
 
+    toggle = () => {
+        this.setState({ isOpen: !this.state.isOpen });
+    }
+    
     render() {
         return (
-            <div className= "wrapper">
-                <Header title="Dashboard" />
-                <hr className="my-3" />
-                <p>
-                    <code> logado com sucesso! ^-^  </code>
-                </p>
-                <div className="text-center">
-                    <Link to="/logout" className="btn btn-outline-primary"> Log Out </Link>
-                </div>
-            </div>
+
+    <div className="float-left fixed-top">
+      <Navbar color="light" light expand="md">
+        <NavbarBrand href="/">Stay Fish</NavbarBrand>
+        <NavbarToggler onClick={this.toggle} />
+        <Collapse isOpen={this.isOpen} navbar>
+          <Nav className="ml-auto" navbar>
+            <NavItem>
+              <NavLink href="/"></NavLink>
+            </NavItem>
+            <UncontrolledDropdown nav inNavbar>
+              <DropdownToggle nav caret>
+                Logout
+              </DropdownToggle>
+              <DropdownMenu right>
+                <DropdownItem />
+                <DropdownItem>
+                  Sair
+                </DropdownItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
+          </Nav>
+        </Collapse>
+      </Navbar>
+    </div>
         );
     }
 }
