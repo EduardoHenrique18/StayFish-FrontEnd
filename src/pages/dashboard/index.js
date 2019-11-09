@@ -14,7 +14,7 @@ export default class Dashboard extends Component {
 
     render() {
         return (
-            <div>
+            <div className= "wrapper">
                 <Header title="Dashboard" />
                 <hr className="my-3" />
                 <p>
