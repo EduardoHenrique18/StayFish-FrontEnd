@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import './style.css';
+import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 
-import Header from '../../components/Header';
 
 export default class Dashboard extends Component {
 
@@ -9,21 +9,31 @@ export default class Dashboard extends Component {
         super();
         this.state = {
             user: {},
+            dropdownOpen: false
         }
     }
+
+
+    toggle = () => this.setState({ dropdownOpen:!this.state.dropdownOpen });    
+     
+
 
     render() {
         return (
             <div className= "wrapper">
-                <Header title="Dashboard" />
-                <hr className="my-3" />
-                <p>
-                    <code> logado com sucesso! ^-^  </code>
-                </p>
-                <div className="text-center">
-                    <Link to="/logout" className="btn btn-outline-primary"> Log Out </Link>
-                </div>
+                <ButtonDropdown direction="up" isOpen={this.state.dropdownOpen} toggle={this.toggle} className= "clicar">
+                <DropdownToggle caret color="primary">
+                    +
+                </DropdownToggle>
+                <DropdownMenu>
+                    <DropdownItem>Pagamento</DropdownItem>
+                    <DropdownItem>Fatura</DropdownItem>
+                </DropdownMenu>
+                </ButtonDropdown>
+
+                
             </div>
+            
         );
     }
 }

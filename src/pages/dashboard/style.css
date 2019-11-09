@@ -1,0 +1,13 @@
+/*fixed-bottom*/
+
+.clicar {
+    /*Posição*/
+    position:absolute; 
+    bottom:19%;
+    right:81%;
+    transform: translate(-50%, -50%);    
+    /*Tamanho*/
+    width:1%;
+    height:4%;
+
+}
