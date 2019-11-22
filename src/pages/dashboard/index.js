@@ -1,29 +1,63 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { Pie } from 'react-chartjs-2'
 
-import Header from '../../components/Header';
 
 export default class Dashboard extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            user: {},
+            chartData: {
+                labels: ['Despesa 1', 'Despesa 2', 'Despesa 3', 'Despesa 4', 'Despesa 5'],
+                datasets: [
+                    {
+                        // Valores das dividas referente a despesas
+                        data: [
+                            617594,
+                            281045,
+                            353060,
+                            106519,
+                            295162,
+                            150728
+                        ],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)',
+                            'rgba(255, 99, 132, 0.6)'
+                        ]
+                    }
+                ]
+            }
         }
     }
 
     render() {
         return (
-            <div>
-                <Header title="Dashboard" />
-                <hr className="my-3" />
-                <p>
-                    <code> logado com sucesso! ^-^  </code>
-                </p>
-                <div className="text-center">
-                    <Link to="/logout" className="btn btn-outline-primary"> Log Out </Link>
-                </div>
-            </div>
+          <div>
+              <Pie 
+              data={this.state.chartData}
+              options={{
+                  responsive: true,
+
+                title: {
+                    display: true,
+                    text: 'Grafico de Dividas',
+                    fontSize: 25,
+
+                },
+                legend: {
+                    display: true,
+                    position: 'left'
+                }
+              }}
+              />
+          </div>
         );
     }
 }
+
+
