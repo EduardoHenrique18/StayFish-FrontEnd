@@ -1,19 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
 import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
   Table
 } from 'reactstrap';
+
+import Topbar from "../../components/navbar/index";
 
 import './style.css';
 
@@ -25,7 +16,6 @@ export default class Dashboard extends Component {
       user: {},
       setCollapsed: false,
       collapsed: false,
-      isOpen: false,
       numberMonth: 0,
       month: "",
       year: 0,
@@ -256,38 +246,10 @@ export default class Dashboard extends Component {
     this.setState({ tableAttributes: attributes })
   }
 
-  toggle = () => {
-    this.setState({ isOpen: !this.state.isOpen });
-  };
-
   render() {
     return (
       <div className="container">
-        <div className="float-left fixed-top">
-          <Navbar color="light" light expand="md">
-            <NavbarBrand href="/">Stay Fish</NavbarBrand>
-            <NavbarBrand>{this.state.balance}</NavbarBrand>
-            <NavbarToggler onClick={this.toggle} />
-            <Collapse isOpen={this.isOpen} navbar>
-              <Nav className="ml-auto" navbar>
-                <NavItem>
-                  <NavLink href="/"></NavLink>
-                </NavItem>
-                <UncontrolledDropdown nav inNavbar>
-                  <DropdownToggle nav caret>
-                    Logout
-              </DropdownToggle>
-                  <DropdownMenu right>
-                    <DropdownItem />
-                    <DropdownItem>
-                      Sair
-                </DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              </Nav>
-            </Collapse>
-          </Navbar>
-        </div>
+        <Topbar balance={this.state.balance}></Topbar>
         <div className="text-center">
           <button className="btn btn-link" type="button" color="link" block onClick={this.previousMonth}><i className="material-icons md-48 local">
             keyboard_arrow_left

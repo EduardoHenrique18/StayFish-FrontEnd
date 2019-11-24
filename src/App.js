@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Chart from './pages/dashboard/index'
 
 import './app.css';
 
