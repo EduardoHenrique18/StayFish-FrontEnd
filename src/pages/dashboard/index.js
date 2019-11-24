@@ -1,8 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
-import { Table } from 'reactstrap';
-
-import { Link } from 'react-router-dom';
 import {
   Collapse,
   Navbar,
@@ -14,91 +11,331 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem } from 'reactstrap';
+  DropdownItem,
+  Table
+} from 'reactstrap';
 
-import Header from '../../components/Header';
 import './style.css';
 
 export default class Dashboard extends Component {
-    
-    constructor() {
-        super();
-        this.state = {
-            user: {}, 
-            setCollapsed: false,
-            collapsed: false,
-            isOpen: false
-            
+
+  constructor() {
+    super();
+    this.state = {
+      user: {},
+      setCollapsed: false,
+      collapsed: false,
+      isOpen: false,
+      numberMonth: 0,
+      month: "",
+      year: 0,
+      payment: [],
+      money: [],
+      tableAttributes: [],
+      balance: 0
+    }
+  }
+
+  date = {
+    "months": [
+      {
+        "number": "01",
+        "month": "jan"
+      },
+      {
+        "number": "02",
+        "month": "fev"
+      },
+      {
+        "number": "03",
+        "month": "mar"
+      },
+      {
+        "number": "04",
+        "month": "abr"
+      },
+      {
+        "number": "05",
+        "month": "mai"
+      },
+      {
+        "number": "06",
+        "month": "jun"
+      },
+      {
+        "number": "07",
+        "month": "jul"
+      },
+      {
+        "number": "08",
+        "month": "ago"
+      },
+      {
+        "number": "09",
+        "month": "set"
+      },
+      {
+        "number": "10",
+        "month": "out"
+      },
+      {
+        "number": "11",
+        "month": "nov"
+      },
+      {
+        "number": "12",
+        "month": "dez"
+      }
+    ]
+  };
+
+  findTotalMoney = () => {
+    const data = { idUser: this.state.user._id};
+    const requestInfo = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+    };
+    fetch('http://localhost:8080/balance', requestInfo)
+      .then(async response => {
+        if (response.ok) {
+          let balance = await response.json();
+          await this.setState({ balance: balance.sum })
         }
-    }
+      })
+      .catch(e => {
+        this.setState({ message: e.message });
+      });
+  };
 
-    toggle = () => {
-        this.setState({ isOpen: !this.state.isOpen });
-    }
-    
-    render() {
-        return (
-            <form className = "form">
-            <Table bordered>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Username</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <th scope="row">3</th>
-                  <td>Larry</td>
-                  <td>the Bird</td>
-                  <td>@twitter</td>
-                </tr>
-              </tbody>
-            </Table> 
-            </form>
-            
-          );
-          
+  async componentDidMount() {
+    await this.setState({ user: JSON.parse(localStorage.getItem('token')) });
+    var data = new Date();
+    const numberMonth = await data.getMonth() + 1;
+    const numberYear = await data.getFullYear();
+    await this.setState({ year: numberYear })
+    await this.setState({ numberMonth: numberMonth }, () => {
+      this.date.months.map(async result => {
+        if (result.number == this.state.numberMonth) {
+          await this.setState({ month: result.month })
+        }
+      })
+    })
+    await this.findPayment();
+    await this.findMoney();
+    this.addTableAttributes();
+    await this.findTotalMoney();
+  };
 
-    <div className="float-left fixed-top">
-      <Navbar color="light" light expand="md">
-        <NavbarBrand href="/">Stay Fish</NavbarBrand>
-        <NavbarToggler onClick={this.toggle} />
-        <Collapse isOpen={this.isOpen} navbar>
-          <Nav className="ml-auto" navbar>
-            <NavItem>
-              <NavLink href="/"></NavLink>
-            </NavItem>
-            <UncontrolledDropdown nav inNavbar>
-              <DropdownToggle nav caret>
-                Logout
+  findBalance = () => {
+    const date = this.state.year + "-" + this.state.numberMonth;
+    const data = { idUser: this.state.user._id, date: date };
+    const requestInfo = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+    };
+    fetch('http://localhost:8080/searchPaymentByDate', requestInfo)
+      .then(async response => {
+        if (response.ok) {
+          let payment = await response.json();
+          await this.setState({ payment: payment })
+        }
+      })
+      .catch(e => {
+        this.setState({ message: e.message });
+      });
+  }
+
+  nextMonth = async () => {
+    let numberMonth = this.state.numberMonth;
+    if (numberMonth == 12) {
+      await this.setState({ numberMonth: 1 });
+      this.date.months.map(async result => {
+        if (result.number == 1) {
+          await this.setState({ month: result.month })
+        }
+      })
+      await this.setState({ year: this.state.year + 1 })
+    } else {
+      let nextMonth = numberMonth + 1;
+      await this.setState({ numberMonth: nextMonth });
+      this.date.months.map(async result => {
+        if (result.number == nextMonth) {
+          await this.setState({ month: result.month })
+        }
+      })
+    }
+    await this.findPayment();
+    await this.findMoney();
+    await this.addTableAttributes();
+  };
+
+  previousMonth = async () => {
+    let numberMonth = this.state.numberMonth;
+    if (numberMonth == 1) {
+      await this.setState({ numberMonth: 12 })
+      this.date.months.map(async result => {
+        if (result.number == 12) {
+          await this.setState({ month: result.month })
+        }
+      })
+      await this.setState({ year: this.state.year - 1 })
+    } else {
+      let previousMonth = numberMonth - 1;
+      await this.setState({ numberMonth: previousMonth })
+      this.date.months.map(async result => {
+        if (result.number == previousMonth) {
+          await this.setState({ month: result.month })
+        }
+      })
+    }
+    await this.findPayment();
+    await this.findMoney();
+    await this.addTableAttributes();
+  };
+
+  findPayment = () => {
+    const date = this.state.year + "-" + this.state.numberMonth;
+    const data = { idUser: this.state.user._id, date: date };
+    const requestInfo = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+    };
+    fetch('http://localhost:8080/searchPaymentByDate', requestInfo)
+      .then(async response => {
+        if (response.ok) {
+          let payment = await response.json();
+          await this.setState({ payment: payment })
+        }
+        this.addTableAttributes();
+      })
+      .catch(e => {
+        this.setState({ message: e.message });
+      });
+  }
+
+  findMoney = () => {
+    const date = this.state.year + "-" + this.state.numberMonth;
+    const data = { idUser: this.state.user._id, date: date };
+    const requestInfo = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+    };
+    fetch('http://localhost:8080/searchMoneyByDate', requestInfo)
+      .then(async response => {
+        if (response.ok) {
+          let money = await response.json();
+          await this.setState({ money: money })
+        }
+        this.addTableAttributes();
+      })
+      .catch(e => {
+        this.setState({ message: e.message });
+      });
+  }
+
+  addTableAttributes = async () => {
+    let attributes = [];
+    await this.state.payment.map(result => {
+      attributes.push(result);
+    });
+    await this.state.money.map(result => {
+      attributes.push(result);
+    });
+    this.setState({ tableAttributes: attributes })
+  }
+
+  toggle = () => {
+    this.setState({ isOpen: !this.state.isOpen });
+  };
+
+  render() {
+    return (
+      <div className="container">
+        <div className="float-left fixed-top">
+          <Navbar color="light" light expand="md">
+            <NavbarBrand href="/">Stay Fish</NavbarBrand>
+            <NavbarBrand>{this.state.balance}</NavbarBrand>
+            <NavbarToggler onClick={this.toggle} />
+            <Collapse isOpen={this.isOpen} navbar>
+              <Nav className="ml-auto" navbar>
+                <NavItem>
+                  <NavLink href="/"></NavLink>
+                </NavItem>
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret>
+                    Logout
               </DropdownToggle>
-              <DropdownMenu right>
-                <DropdownItem />
-                <DropdownItem>
-                  Sair
+                  <DropdownMenu right>
+                    <DropdownItem />
+                    <DropdownItem>
+                      Sair
                 </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          </Nav>
-        </Collapse>
-      </Navbar>
-    </div>
-        );
-    }
- 
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+              </Nav>
+            </Collapse>
+          </Navbar>
+        </div>
+        <div className="text-center">
+          <button className="btn btn-link" type="button" color="link" block onClick={this.previousMonth}><i className="material-icons md-48 local">
+            keyboard_arrow_left
+            </i></button>
+          <text>{this.state.month}</text>
+          <button className="btn btn-link" type="button" color="link" block onClick={this.nextMonth}><i className="material-icons md-48 local">
+            keyboard_arrow_right
+            </i></button>
+        </div>
+        <form className="form">
+          <Table bordered>
+            <thead>
+              <tr>
+                <th>descrição</th>
+                <th>valor</th>
+                <th>data</th>
+                <th>categoria</th>
+                <th>observação</th>
+                <th>status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.payment.length ?
+                this.state.tableAttributes.map(result => (
+                  <tr>
+                    <td>{result.description}</td>
+                    <td>{result.value}</td>
+                    <td>{new Date(result.date).toLocaleDateString("pt-BR")}</td>
+                    <td>{result.category}</td>
+                    <td>{result.observation}</td>
+                    <td>{result.status == 1 ? "pago" : (result.status == 0 ? "pendente" : "")}</td>
+                  </tr>
+                ))
+                :
+                (<tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                </tr>)
+              }
+            </tbody>
+          </Table>
+        </form>
+      </div>
+    );
+  }
+
 }

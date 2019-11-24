@@ -63,7 +63,7 @@ export default class Login extends Component {
             })
             .then(result => {
                 if (result.message === undefined) {
-                localStorage.setItem('token', result);
+                localStorage.setItem('token', JSON.stringify(result));
                 this.props.history.push("/admin");
                 return;
                 }else {
@@ -77,7 +77,7 @@ export default class Login extends Component {
 
     render() {
         return (
-            <div className="col-md-4">
+            <div className="col-md-4 mainDiv">
                 <Header title="Stay Fish" />
                 <hr className="my-3" />
                 {
