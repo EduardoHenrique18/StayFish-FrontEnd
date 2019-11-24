@@ -1,7 +1,11 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
 import {
-  Table
+  Table,
+  ButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem
 } from 'reactstrap';
 
 import Topbar from "../../components/navbar/index";
@@ -22,7 +26,8 @@ export default class Dashboard extends Component {
       payment: [],
       money: [],
       tableAttributes: [],
-      balance: 0
+      balance: 0,
+      dropdownOpen: false
     }
   }
 
@@ -80,7 +85,7 @@ export default class Dashboard extends Component {
   };
 
   findTotalMoney = () => {
-    const data = { idUser: this.state.user._id};
+    const data = { idUser: this.state.user._id };
     const requestInfo = {
       method: 'POST',
       body: JSON.stringify(data),
@@ -246,6 +251,8 @@ export default class Dashboard extends Component {
     this.setState({ tableAttributes: attributes })
   }
 
+  toggle = () => this.setState({ dropdownOpen: !this.state.dropdownOpen });
+
   render() {
     return (
       <div className="container">
@@ -296,8 +303,18 @@ export default class Dashboard extends Component {
             </tbody>
           </Table>
         </form>
+        <div className="wrapper">
+          <ButtonDropdown direction="up" isOpen={this.state.dropdownOpen} toggle={this.toggle} className="clicar">
+            <DropdownToggle caret color="primary">
+              +
+                    </DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem block onClick={this.toggleModal}>Pagamento</DropdownItem>
+              <DropdownItem>Fatura</DropdownItem>
+            </DropdownMenu>
+          </ButtonDropdown>
+        </div>
       </div>
     );
   }
-
 }
