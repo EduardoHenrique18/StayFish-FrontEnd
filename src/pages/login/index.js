@@ -126,7 +126,7 @@ export default class Login extends Component {
                             </FormGroup>
                             <FormGroup>
                                 <Label for="password">Senha</Label>
-                                <Input type="text" id="passwordCadastro" onChange={e => this.password = e.target.value} placeholder="Informe sua senha" />
+                                <Input type="password" id="passwordCadastro" onChange={e => this.password = e.target.value} placeholder="Informe sua senha" />
                             </FormGroup>
                         </Form>
                     </ModalBody>
