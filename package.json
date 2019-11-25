@@ -1,11 +1,17 @@
 {
   "name": "front",
   "version": "0.1.0",
+  "engines": {
+    "node": "10.16.2"
+  },
   "private": true,
   "dependencies": {
     "bootstrap": "^4.3.1",
     "chart.js": "^2.9.2",
+    "express": "^4.17.1",
+    "express-favicon": "^2.0.1",
     "material-design-icons": "^3.0.1",
+    "path": "^0.12.7",
     "react": "^16.10.2",
     "react-chartjs-2": "^2.8.0",
     "react-dom": "^16.10.2",
@@ -14,7 +20,7 @@
     "reactstrap": "^8.1.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
