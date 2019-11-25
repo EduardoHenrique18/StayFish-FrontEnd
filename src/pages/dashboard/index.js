@@ -122,7 +122,6 @@ export default class Dashboard extends Component {
       value: this.state.createPayment.value, description: this.state.createPayment.description, date: this.state.createPayment.date,
       status: this.state.createPayment.status, observation: this.state.createPayment.observation, idUser: this.state.user._id, category: this.state.createPayment.category
     };
-    console.log(data)
     const requestInfo = {
       method: 'POST',
       body: JSON.stringify(data),

@@ -23,7 +23,6 @@ export default class Login extends Component {
 
     createUser = () => {
         const data = { email: this.email, password: this.password, bornDate: this.bornDate, name: this.name };
-        console.log(data)
         const requestInfo = {
             method: 'POST',
             body: JSON.stringify(data),
@@ -45,7 +44,6 @@ export default class Login extends Component {
 
     signIn = () => {
         const data = { email: this.email, password: this.password };
-        console.log(data)
         const requestInfo = {
             method: 'POST',
             body: JSON.stringify(data),
@@ -73,6 +71,11 @@ export default class Login extends Component {
             .catch(e => {
                 this.setState({ message: e.message });
             });
+    }
+
+    createAndCloseUser = async () => {
+        await this.createUser();
+        await this.toggleModal();
     }
 
     render() {
@@ -132,7 +135,7 @@ export default class Login extends Component {
                     </ModalBody>
                     <ModalFooter>
                         <Button color="danger" onClick={this.toggleModal.bind(this)}>Cancelar</Button>
-                        <Button color="primary" onClick={this.createUser}>Cadastrar</Button>
+                        <Button color="primary" onClick={this.createAndCloseUser}>Cadastrar</Button>
                     </ModalFooter>
                 </Modal>
             </div>
