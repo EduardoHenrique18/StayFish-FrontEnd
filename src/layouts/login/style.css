@@ -1,0 +1,12 @@
+.login-Button {
+    margin-right: 5px;
+}
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 500px;
+  }
+  
+
