@@ -1,6 +1,6 @@
-import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+/*!
 
+<<<<<<< HEAD
 // import PrivateRoute from './auth';
 
 // import Login from './pages/login';
@@ -15,5 +15,33 @@ const Routes = () => (
         </Switch>
     </Router>
 );
+=======
+=========================================================
+* Black Dashboard React v1.0.0
+=========================================================
 
-export default Routes;
+* Product Page: https://www.creative-tim.com/product/black-dashboard-react
+* Copyright 2019 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://github.com/creativetimofficial/black-dashboard-react/blob/master/LICENSE.md)
+
+* Coded by Creative Tim
+>>>>>>> 18987fa0fc9789dbb08f65c219e48b0042c7dc01
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+*/
+import Dashboard from "views/Dashboard.jsx";
+
+var routes = [
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    rtlName: "لوحة القيادة",
+    icon: "tim-icons icon-chart-pie-36",
+    component: Dashboard,
+    layout: "/admin"
+  }
+];
+export default routes;
