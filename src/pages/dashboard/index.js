@@ -6,6 +6,7 @@ export default class Dashboard extends Component {
 
     constructor(props) {
         super(props);
+        
         this.state = {
             chartData: {
                 labels: ['Despesa 1', 'Despesa 2', 'Despesa 3', 'Despesa 4', 'Despesa 5'],
@@ -37,9 +38,19 @@ export default class Dashboard extends Component {
 
     render() {
         return (
+            function sizeOfThings() {
+                var windowWidth = window.innerWidth;
+                var windowHeight = window.innerHeight;
+                
+                var screenWidth = screen.width;
+                var screenHeight = screen.height;
+                
+                document.querySelector('.window-size').innerHTML = windowWidth + 'x' + windowHeight;
+                document.querySelector('.screen-size').innerHTML = screenWidth + 'x' + screenHeight;
+              
+              },
           <div>
-              <Pie 
-              data={this.state.chartData}
+              <Pie data={this.state.chartData} width={500} height={250}
               options={{
                   responsive: true,
 
