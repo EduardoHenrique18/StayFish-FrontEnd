@@ -1,3 +1,9 @@
 .labell {
     font-size: 1.75rem;
 }
+
+.alertInput {
+    font-size: 8pt;
+    color: #c0392b;
+    margin-left: 5px;
+}
