@@ -958,3 +958,307 @@ class Dashboard extends React.Component {
                   />
                   { this.state.createPaymentErrors.date && <span className="alertInput">O campo é obrigatório </span>}
                 </FormGroup>
+                <FormGroup>
+                  <Label for="Status">Status</Label>
+                  <Input type="select" name="status"
+                  style={{color: "black"}}
+                  onChange={e => this.changeCreatePayment(e)}>
+                  <option value="">Selecione</option>
+                  <option value={0}>Pendente</option>
+                  <option value={1}>Pago</option>
+                  </Input>
+                  {this.state.createPaymentErrors.status && <span className="alertInput">O campo é obrigatório </span>}
+                </FormGroup>
+                <FormGroup>
+                  <Label for="Observação">Observação</Label>
+                  <Input 
+                  style={{color: "#000"}}
+                  type="text" id="observaçãoPagamento"
+                  name="observation"
+                  value={this.state.createPayment.observation}
+                  onChange={e => this.changeCreatePayment(e)}
+                  placeholder="Informe uma observação"
+                  />
+                  {this.state.createPaymentErrors.observation && <span className="alertInput">O campo é obrigatório </span>}
+                </FormGroup>
+                <FormGroup>
+                  <Label for="categoria">categoria</Label>
+                  <Input
+                  style={{color: "#000"}}
+                  type="text" id="categoriaPagamento"
+                  name="category"
+                  value={this.state.createPayment.category}
+                  onChange={e => this.changeCreatePayment(e)}
+                  placeholder="Informe uma categoria"
+                  />
+                  { this.state.createPaymentErrors.category && <span className="alertInput">O campo é obrigatório </span>}
+                </FormGroup>
+              </Form>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" onClick={this.togglePaymentModal.bind(this)}>Cancelar</Button>
+              <Button color="primary" onClick={this.createAndBindPayment}>Adicionar</Button>
+            </ModalFooter>
+          </Modal>
+          <Modal isOpen={this.state.modalMoneyIsOpen} toggle={this.toggleMoneyModal}>
+            <ModalHeader toggle={this.toggleMoneyModal.bind(this)}>
+              Adicionar Receita
+            </ModalHeader>
+            <ModalBody>
+              <Form>
+                <ModalBody>
+                  <Form>
+                    <FormGroup>
+                      <Label for="descrição">Descrição</Label>
+                      <Input
+                      style={{color: "#000"}}
+                      type="text"
+                      id="descricaoMoney"
+                      name="description"
+                      value={this.state.createMoney.description}
+                      onChange={e => this.changeCreateMoney(e)}
+                      placeholder="Informe a descrição"
+                      />
+                      { this.state.createMoneyErrors.description && <span className="alertInput">O campo é obrigatório </span>}
+                    </FormGroup>
+                    <FormGroup>
+                      <Label for="valor">Valor</Label>
+                      <Input
+                      style={{color: "#000"}}
+                      type="number"
+                      id="valorMoney"
+                      name="value"
+                      onChange={e => this.changeCreateMoney(e)}
+                      placeholder="Informe o valor"
+                      />
+                      { this.state.createMoneyErrors.value && <span className="alertInput">O campo é obrigatório </span>}
+                    </FormGroup>
+                    <FormGroup>
+                      <Label for="dataMoney">Data da fatura</Label>
+                      <Input
+                      style={{color: "#000"}}
+                      type="date"
+                      id="dtMoney"
+                      name="date"
+                      onChange={e => this.changeCreateMoney(e)}
+                      placeholder="Informe a data da fatura"
+                      />
+                      { this.state.createMoneyErrors.date && <span className="alertInput">O campo é obrigatório </span>}
+                    </FormGroup>
+                    <FormGroup>
+                      <Label for="Observação">Observação</Label>
+                      <Input
+                      style={{color: "#000"}}
+                      type="text"
+                      name="observation"
+                      id="observaçãoMoney"
+                      onChange={e => this.changeCreateMoney(e)}
+                      placeholder="Informe uma observação"
+                      />
+                      { this.state.createMoneyErrors.observation && <span className="alertInput">O campo é obrigatório </span>}
+                    </FormGroup>
+                    <FormGroup>
+                      <Label for="categoria">categoria</Label>
+                      <Input
+                      style={{color: "#000"}}
+                      type="text"
+                      id="categoriaMoney"
+                      name="category"
+                      onChange={e => this.changeCreateMoney(e)}
+                      placeholder="Informe uma categoria"
+                      />
+                      { this.state.createMoneyErrors.category && <span className="alertInput">O campo é obrigatório </span>}
+                    </FormGroup>
+                  </Form>
+                </ModalBody>
+              </Form>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" onClick={this.toggleMoneyModal.bind(this)}>Cancelar</Button>
+              <Button color="primary" onClick={this.createAndBindMoney}>Adicionar</Button>
+            </ModalFooter>
+          </Modal>
+          <Modal isOpen={this.state.modalEditPaymentIsOpen} toggle={this.togleEditTablePayment}>
+            <ModalHeader toggle={this.togleEditTablePayment}>
+              Alterar Despesa
+            </ModalHeader>
+            <ModalBody>
+              {
+                this.state.tableAttributes[this.state.tableIndex] &&
+                <Form>
+                <FormGroup>
+                  <Label for="descrição">Descrição</Label>
+                  <Input 
+                    style={{color: "#000"}}
+                    value={this.state.tableAttributes[this.state.tableIndex].description} 
+                    type="text"
+                    id="descricaoPagamento" 
+                    name="description"
+                    onChange={e => this.changeDespesa(e, this.state.tableIndex)} 
+                    placeholder="Informe a descrição"
+                  />
+                  { this.state.alterPaymentErrors.description && <span className="alertInput">O campo é obrigatório</span>}
+                </FormGroup>
+                <FormGroup>
+                  <Label for="valor">Valor</Label>
+                  <Input
+                    style={{color: "#000"}}
+                    value={this.state.tableAttributes[this.state.tableIndex].value}
+                    name="value"
+                    type="number" 
+                    id="valorPagamento" 
+                    onChange={e => this.change(e, this.state.tableIndex)} 
+                    placeholder="Informe o valor" 
+                  />
+                  { this.state.alterPaymentErrors.value && <span className="alertInput">O campo é obrigatório</span>}
+                </FormGroup>
+                <FormGroup>
+                  <Label for="dataPagamento">Data do Pagamento</Label>
+                  <Input
+                  style = {{color: "#000"}}
+                  value={ moment(this.state.tableAttributes[this.state.tableIndex].date).format('YYYY-MM-DD') }
+                  name="date"
+                  type="date" 
+                  id="dtPagamento"
+                  onChange={e => this.change(e, this.state.tableIndex)}
+                  placeholder="Informe a data do pagamento"
+                  />
+                  { this.state.alterPaymentErrors.date && <span className="alertInput">O campo é obrigatório</span>}
+                </FormGroup>
+                <FormGroup>
+                  <Label for="Status">Status</Label>
+                  <Input
+                  type="select"
+                  name="status"
+                  id="status"
+                  style={{color: "#000"}}
+                  value={this.state.tableAttributes[this.state.tableIndex].status}
+                  onChange={e => this.change(e, this.state.tableIndex)}>
+                  <option value={0}>Pendente</option>
+                  <option value={1}>Pago</option>
+                  </Input>
+                  { this.state.alterPaymentErrors.status && <span className="alertInput">O campo é obrigatório</span>}
+                </FormGroup>
+                <FormGroup>
+                  <Label for="Observação">Observação</Label>
+                  <Input
+                  style = {{color: "#000"}}
+                  value={this.state.tableAttributes[this.state.tableIndex].observation}
+                  name="observation"
+                  type="text" 
+                  id="observaçãoPagamento"
+                  onChange={e => this.change(e, this.state.tableIndex)}
+                  placeholder="Informe uma observação"
+                  />
+                  { this.state.alterPaymentErrors.observation && <span className="alertInput">O campo é obrigatório</span>}
+                </FormGroup>
+                <FormGroup>
+                  <Label for="categoria">categoria</Label>
+                  <Input
+                    style = {{color: "#000"}}
+                    value={this.state.tableAttributes[this.state.tableIndex].category}
+                    name="category"
+                    type="text" 
+                    id="categoriaPagamento"
+                    onChange={e => this.change(e, this.state.tableIndex)}
+                    placeholder="Informe uma categoria"
+                  />
+                  { this.state.alterPaymentErrors.category && <span className="alertInput">O campo é obrigatório</span>}
+                </FormGroup>
+              </Form>
+              }
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" onClick={this.toggleEditTablePayment.bind(this)}>Cancelar</Button>
+              <Button color="primary" onClick={() => this.updatePayment(this.state.tableIndex)}>Alterar</Button>
+            </ModalFooter>
+          </Modal>
+          <Modal isOpen={this.state.modalEditMoneyIsOpen} toggle={this.toggleEditTableMoney}>
+            <ModalHeader toggle={this.toggleEditTableMoney.bind(this)}>
+              Alterar Receita
+                    </ModalHeader>
+            <ModalBody>
+              { 
+                this.state.tableAttributes[this.state.tableIndex] && 
+              
+                <Form>
+                  <FormGroup>
+                    <Label for="descrição">Descrição</Label>
+                    <Input
+                      style={{color: "#000"}}
+                      value={this.state.tableAttributes[this.state.tableIndex].description}
+                      name="description"
+                      type="text"
+                      id="description"
+                      onChange={e => this.changeReceita(e, this.state.tableIndex)}
+                      placeholder="Informe a descrição"
+                    />
+                    { this.state.alterMoneyErrors.description && <span className="alertInput">O campo é obrigatório</span>}
+                  </FormGroup>
+                  <FormGroup>
+                    <Label for="valor">Valor</Label>
+                    <Input
+                      style={{color: "#000"}}
+                      type="number"
+                      name="value"
+                      value={this.state.tableAttributes[this.state.tableIndex].value}
+                      id="valorPagamento"
+                      onChange={e => this.changeReceita(e, this.state.tableIndex)}
+                      placeholder="Informe o valor"
+                    />
+                     { this.state.alterMoneyErrors.value && <span className="alertInput">O campo é obrigatório</span>}
+                  </FormGroup>
+                  <FormGroup>
+                    <Label for="dataPagamento">Data do Pagamento</Label>
+                    <Input
+                      style={{color: "#000"}}
+                      type="date"
+                      name="date"
+                      value={moment(this.state.tableAttributes[this.state.tableIndex].date).format('YYYY-MM-DD')}
+                      id="dtPagamento"
+                      onChange={e => this.changeReceita(e, this.state.tableIndex)}
+                      placeholder="Informe a data do pagamento"
+                    />
+                     { this.state.alterMoneyErrors.date && <span className="alertInput">O campo é obrigatório</span>}
+                  </FormGroup>
+                  <FormGroup>
+                    <Label for="Observação">Observação</Label>
+                    <Input
+                      style={{color: "#000"}}
+                      type="text"
+                      name="observation"
+                      value={this.state.tableAttributes[this.state.tableIndex].observation}
+                      id="observaçãoPagamento"
+                      onChange={e => this.changeReceita(e, this.state.tableIndex)}
+                      placeholder="Informe uma observação"
+                    />
+                     { this.state.alterMoneyErrors.observation && <span className="alertInput">O campo é obrigatório</span>}
+                  </FormGroup>
+                  <FormGroup>
+                    <Label for="categoria">categoria</Label>
+                    <Input
+                      style={{color: "#000"}}
+                      type="text"
+                      name="category"
+                      value={this.state.tableAttributes[this.state.tableIndex].category}
+                      id="categoriaPagamento"
+                      onChange={e => this.changeReceita(e, this.state.tableIndex)}
+                      placeholder="Informe uma categoria"
+                    />
+                     { this.state.alterMoneyErrors.category && <span className="alertInput">O campo é obrigatório</span>}
+                  </FormGroup>
+                </Form>
+              }
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" onClick={this.toggleEditTableMoney.bind(this)}>Cancelar</Button>
+              <Button color="primary" onClick={() => this.alterMoney(this.state.tableIndex)}>Alterar</Button>
+            </ModalFooter>
+          </Modal>
+        </div>
+      </>
+    );
+  }
+}
+
+export default Dashboard;
