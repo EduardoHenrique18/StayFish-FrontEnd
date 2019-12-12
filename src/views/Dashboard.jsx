@@ -16,6 +16,8 @@
 
 */
 import React from "react";
+import Swal from 'sweetalert2';
+import moment from 'moment';
 // react plugin used to create charts
 import { Line } from "react-chartjs-2";
 
@@ -38,7 +40,7 @@ import {
   Form,
   FormGroup,
   Label,
-  Input
+  Input,
 } from "reactstrap";
 
 // core components
@@ -76,8 +78,12 @@ class Dashboard extends React.Component {
         date: "",
         status: 0,
         observation: "",
-        category: ""
+        category: "",
       },
+      createPaymentErrors: {},
+      createMoneyErrors: {},
+      alterPaymentErrors: {},
+      alterMoneyErrors: {},
       createMoney: {
         value: 0,
         description: "",
@@ -100,9 +106,9 @@ class Dashboard extends React.Component {
 
     return {
       labels: [
-        "JAN",
-        "FEB",
-        "MAR",
+        `JAN`,
+        `FEB`,
+        `MAR`,
         "APR",
         "MAY",
         "JUN",
@@ -110,8 +116,8 @@ class Dashboard extends React.Component {
         "AUG",
         "SEP",
         "OCT",
-        "NOV",
-        "DEC"
+        `NOV`,
+        `DEC`
       ],
       datasets: [
         {
@@ -271,6 +277,47 @@ class Dashboard extends React.Component {
       });
   }
 
+  updatePayment = (tableIndex) => {
+
+    const alterPaymentErrors = this.state.alterPaymentErrors;
+
+    for (const [key, value] of Object.entries(this.state.alterPaymentErrors)) {
+      if (value == '') {
+        Object.assign(alterPaymentErrors, { [key]: true })
+      }
+      
+      if (key === 'value' && value == 0) {
+        Object.assign(alterPaymentErrors, { [key]: true })
+      }
+    }
+
+    this.setState({ ...this.state, alterPaymentErrors });
+
+    if (Object.keys(alterPaymentErrors).length === 0) {
+      this.setState({ ...this.state, modalEditPaymentIsOpen: false });
+
+      // console.log('enviando para o backend', this.state.tableAttributes[tableIndex]);
+
+      const requestInfo = {
+        method: 'POST',
+        body: JSON.stringify({ 
+          ...this.state.tableAttributes[tableIndex]
+        }),
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        }),
+      };
+      
+      fetch('http://localhost:8080/updatePayment', requestInfo)
+        .then(async response => {
+          if (response.ok) {
+            await this.initialLoader();
+          }
+        }).catch(e => this.setState({ ...this.state, message: e.message }))
+      }
+    
+  }
+
   createMoney = () => {
     const data = {
       value: this.state.createMoney.value, description: this.state.createMoney.description, date: this.state.createMoney.date,
@@ -298,7 +345,7 @@ class Dashboard extends React.Component {
       });
   }
 
-  findTotalMoney = () => {
+  findTotalMoney = async() => {
     const data = { idUser: this.state.user._id };
     const requestInfo = {
       method: 'POST',
@@ -332,13 +379,18 @@ class Dashboard extends React.Component {
         }
       })
     })
+    
+    await this.initialLoader();
+  };
+
+  initialLoader = async() => {
     await this.findPayment();
     await this.findMoney();
     this.addTableAttributes();
     await this.findTotalMoney();
     await this.findPaymentYear();
     await this.findMoneyYear();
-  };
+  }
 
   findBalance = () => {
     const data = { idUser: this.state.user._id };
@@ -413,7 +465,7 @@ class Dashboard extends React.Component {
     await this.addTableAttributes();
   };
 
-  findPayment = () => {
+  findPayment = async() => {
     const date = this.state.year + "-" + this.state.numberMonth;
     const data = { idUser: this.state.user._id, date: date };
     const requestInfo = {
@@ -427,7 +479,7 @@ class Dashboard extends React.Component {
       .then(async response => {
         if (response.ok) {
           let payment = await response.json();
-          await this.setState({ payment: payment })
+          this.setState({ payment: payment })
         }
         this.addTableAttributes();
       })
@@ -436,7 +488,7 @@ class Dashboard extends React.Component {
       });
   }
 
-  findMoney = () => {
+  findMoney = async() => {
     const date = this.state.year + "-" + this.state.numberMonth;
     const data = { idUser: this.state.user._id, date: date };
     const requestInfo = {
@@ -450,13 +502,82 @@ class Dashboard extends React.Component {
       .then(async response => {
         if (response.ok) {
           let money = await response.json();
-          await this.setState({ money: money })
+          this.setState({ money: money })
         }
         this.addTableAttributes();
       })
       .catch(e => {
         this.setState({ message: e.message });
       });
+  }
+
+  deletDebt = (_id) => {
+    const data = { _id: _id }
+    const requestInfo = {
+      method: 'DELETE',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+    };
+    fetch('http://localhost:8080/deletDebt', requestInfo)
+    .then(async response => {
+
+      if (response.ok) {
+        this.findPayment();
+        this.addTableAttributes();
+        this.findBalance();
+        this.findPaymentYear();
+        this.findMoneyYear();
+        this.findTotalMoney();
+        Swal.fire({
+          icon: 'success',
+          title: 'Excluido Com Sucesso!!',
+          timer: '1500'
+        });
+      }
+    })
+    .catch(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Erro ao Excluir',
+        timer: '1500'
+      })
+    })
+  }
+
+  deletInvoice = (_id) => {
+    const data = { _id: _id }
+    const requestInfo = {
+      method: 'DELETE',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+    };
+    fetch('http://localhost:8080/deletInvoice', requestInfo)
+    .then(async response => {
+      if(response.ok) {
+        this.findMoney();
+        this.addTableAttributes();
+        this.findBalance();
+        this.findPaymentYear();
+        this.findMoneyYear();
+        this.findTotalMoney();
+        Swal.fire({
+          icon: 'success',
+          title: 'Excluido Com Sucesso!!',
+          timer: '1500'
+        });
+      }
+    })
+    .catch(() => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao Excluir',
+        timer: '1500'
+      })
+    })
   }
 
   addTableAttributes = async () => {
@@ -473,22 +594,112 @@ class Dashboard extends React.Component {
   toggle = () => this.setState({ dropdownOpen: !this.state.dropdownOpen });
 
   togglePaymentModal = () => {
-    this.setState({ modalPaymentIsOpen: !this.state.modalPaymentIsOpen });
+    this.setState({ 
+      modalPaymentIsOpen: !this.state.modalPaymentIsOpen,
+      createPayment: {
+        value: 0,
+        description: "",
+        date: "",
+        status: 0,
+        observation: "",
+        category: "",
+      },
+    });
   };
 
   toggleMoneyModal = () => {
-    this.setState({ modalMoneyIsOpen: !this.state.modalMoneyIsOpen });
+    this.setState({ modalMoneyIsOpen: !this.state.modalMoneyIsOpen,
+      createMoney: {
+      value: 0,
+        description: "",
+        date: "",
+        observation: "",
+        category: "",
+      },
+    });
   };
 
   createAndBindPayment = async () => {
-    await this.createPayment();
-    this.togglePaymentModal();
+    const createPaymentErrors = this.state.createPaymentErrors;
+
+    for (const [key, value] of Object.entries(this.state.createPayment)) {
+      if (value == '') {
+        Object.assign(createPaymentErrors, { [key]: true })
+      }
+      
+      if (key === 'value' && value == 0) {
+        Object.assign(createPaymentErrors, { [key]: true })
+      }
+    }
+
+    this.setState({ ...this.state, createPaymentErrors });
+
+    if (Object.keys(createPaymentErrors).length === 0) {
+      await this.createPayment();
+      this.togglePaymentModal();
+    }
   }
 
   createAndBindMoney = async () => {
-    await this.createMoney();
-    this.toggleMoneyModal();
+    const createMoneyErrors = this.state.createMoneyErrors;
+
+    for (const [key, value] of Object.entries(this.state.createMoney)) {
+      if (value == '') {
+        Object.assign(createMoneyErrors, { [key]: true })
+      }
+      
+      if (key === 'value' && value == 0) {
+        Object.assign(createMoneyErrors, { [key]: true })
+      }
+    }
+
+    this.setState({ ...this.state, createMoneyErrors });
+
+    if (Object.keys(createMoneyErrors).length === 0) {
+      await this.createMoney();
+      this.toggleMoneyModal();
+    }
   }
+
+  alterMoney = async (tableIndex) => {
+
+    const alterMoneyErrors = this.state.alterMoneyErrors;
+
+    for (const [key, value] of Object.entries(this.state.alterMoneyErrors)) {
+      if (value == '') {
+        Object.assign(alterMoneyErrors, { [key]: true })
+      }
+      
+      if (key === 'value' && value == 0) {
+        Object.assign(alterMoneyErrors, { [key]: true })
+      }
+    }
+
+    this.setState({ ...this.state, alterMoneyErrors });
+
+    if (Object.keys(alterMoneyErrors).length === 0) {
+      this.setState({ ...this.state, modalEditMoneyIsOpen: false });
+
+      console.log('enviando para o backend', this.state.tableAttributes[tableIndex]);
+
+      const requestInfo = {
+        method: 'POST',
+        body: JSON.stringify({ 
+          ...this.state.tableAttributes[tableIndex]
+        }),
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        }),
+      };
+      
+      fetch('http://localhost:8080/updateMoney', requestInfo)
+        .then(async response => {
+          if (response.ok) {
+            await this.initialLoader();
+          }
+        }).catch(e => this.setState({ ...this.state, message: e.message }))
+      }
+    }
 
   setBgChartData = name => {
     this.setState({
@@ -497,12 +708,14 @@ class Dashboard extends React.Component {
   };
 
   editTableMoney = (e) => {
+    console.log('aqui', e);
     this.setState({tableIndex: e});
     this.toggleEditTableMoney();
   }
 
   toggleEditTableMoney = () => {
     this.setState({ modalEditMoneyIsOpen: !this.state.modalEditMoneyIsOpen });
+    this.initialLoader();
   }
 
   editTablePayment = (e) => {
@@ -512,8 +725,102 @@ class Dashboard extends React.Component {
 
   toggleEditTablePayment= () => {
     this.setState({ modalEditPaymentIsOpen: !this.state.modalEditPaymentIsOpen });
+    this.initialLoader();
   }
 
+  change = (e, tableIndex) => {
+    const tableAttributes = this.state.tableAttributes;
+    const { name, value } = e.target;
+
+    if (value == 'date') {
+      tableAttributes[tableIndex][name] = moment(value).format('DD/MM/YYYY');
+    } else {
+      tableAttributes[tableIndex][name] = value;
+    }
+    
+    this.setState({
+      ...this.state,
+      tableAttributes
+    });
+  }
+
+  changeDespesa = (e, tableIndex) => {
+    const alterPaymentErrors = this.state.alterPaymentErrors;
+
+    const tableAttributes = this.state.tableAttributes;
+    const { name, value } = e.target;
+    tableAttributes[tableIndex][name] = value;
+
+    if (value.trim() === '') {
+      alterPaymentErrors[name] = true;
+    } else {
+      delete alterPaymentErrors[name];
+    }
+
+    this.setState({
+      ...this.state, 
+        tableAttributes
+    });
+  }
+
+  changeReceita = (e, tableIndex) => {
+    const alterMoneyErrors = this.state.alterMoneyErrors;
+
+    const tableAttributes = this.state.tableAttributes;
+    const { name, value } = e.target;
+    tableAttributes[tableIndex][name] = value;
+
+    if (value.trim() === '') {
+      alterMoneyErrors[name] = true;
+    } else {
+      delete alterMoneyErrors[name];
+    }
+
+    this.setState({
+      ...this.state, 
+        tableAttributes
+    });
+  }
+
+  changeCreatePayment = e => {
+    const { name, value } = e.target;
+    const createPaymentErrors = this.state.createPaymentErrors;
+
+    if (value.trim() === '') {
+      createPaymentErrors[name] = true;
+    } else {
+      delete createPaymentErrors[name];
+    }
+
+    this.setState({
+      ...this.state, 
+      createPayment: {
+        ...this.state.createPayment,
+        [name]: value,
+      },
+      createPaymentErrors,
+    });
+  }
+
+  changeCreateMoney = e => {
+    const { name, value } = e.target;
+    const createMoneyErrors = this.state.createMoneyErrors;
+
+    if (value.trim() === '') {
+      createMoneyErrors[name] = true;
+    } else {
+      delete createMoneyErrors[name];
+    }
+
+    this.setState({
+      ...this.state, 
+      createMoney: {
+        ...this.state.createMoney,
+        [name]: value,
+      },
+      createMoneyErrors,
+    });
+  }
 
   render() {
     return (
@@ -525,11 +832,12 @@ class Dashboard extends React.Component {
                 <CardHeader>
                   <CardTitle tag="h4">Tabela</CardTitle>
                   <h1 style = {this.state.balance >= 0 ?{color: "#1fe10e"} : {color: "#fe0031"}}>R${this.state.balance}</h1>
-                  <Button onClick={this.toggleMoneyModal}>Adicionar Fatura</Button>
-                  <Button onClick={this.togglePaymentModal}>Adicionar Pagamento</Button>
-                  <div className = "float-right">
+                  <Button onClick={this.toggleMoneyModal}>Adicionar Receita</Button>
+                  <Button onClick={this.togglePaymentModal}>Adicionar Despesa</Button>
+                  <div className="float-right">
+                    <p className="text-center">{this.state.year}</p>
                     <Button className="btn btn-link float-right" type="button" color="link" onClick={this.nextMonth}><i className="material-icons md-60 local">
-                      keyboard_arrow_right        
+                      keyboard_arrow_right
                     </i></Button>
                     <p className = "float-right  h1">{this.state.month}</p>
                     <Button className="btn btn-link float-right" type="button" color="link" onClick={this.previousMonth}><i className="material-icons md-60 local">
@@ -560,6 +868,7 @@ class Dashboard extends React.Component {
                             <td>{result.category}</td>
                             <td className="text-center">{result.value}</td>
                             <td className="text-center"><Button onClick ={() => result.status >= 0 ? this.editTablePayment(i) : this.editTableMoney(i)}>Editar</Button></td>
+                            <td><Button onClick={() => result.hasOwnProperty('status') ? this.deletDebt(result._id) : this.deletInvoice(result._id)}>Excluir</Button></td>
                           </tr>
                         ))
                         :
@@ -584,7 +893,7 @@ class Dashboard extends React.Component {
                 <CardHeader>
                   <Row>
                     <Col className="text-left" sm="6">
-                      <CardTitle tag="h2">Pagamentos x Fatura</CardTitle>
+                      <CardTitle tag="h2">Receitas x Despesas</CardTitle>
                     </Col>
                     <Col sm="6">
                       <ButtonGroup
@@ -608,152 +917,44 @@ class Dashboard extends React.Component {
           </Row>
           <Modal isOpen={this.state.modalPaymentIsOpen} toggle={this.togglePaymentModal}>
             <ModalHeader toggle={this.togglePaymentModal.bind(this)}>
-              Adicionar pagamento
-                    </ModalHeader>
+              Adicionar Despesa
+            </ModalHeader>
             <ModalBody>
               <Form>
                 <FormGroup>
                   <Label for="descrição">Descrição</Label>
-                  <Input style = {{color: "#000"}} type="text" id="descricaoPagamento" onChange={e => this.state.createPayment.description = e.target.value} placeholder="Informe a descrição" />
+                  <Input 
+                    style={{color: "#000"}}
+                    type="text" 
+                    id="descricaoPagamento"
+                    name="description"
+                    value={this.state.createPayment.description}
+                    onChange={e => this.changeCreatePayment(e)}
+                    placeholder="Informe a descrição"
+                  />
+                { this.state.createPaymentErrors.description && <span className="alertInput">O campo é obrigatório</span>}
                 </FormGroup>
                 <FormGroup>
                   <Label for="valor">Valor</Label>
-                  <Input style = {{color: "#000"}} type="text" id="valorPagamento" onChange={e => this.state.createPayment.value = e.target.value} placeholder="Informe o valor" />
+                  <Input
+                  style = {{color: "#000"}}
+                  type="number" id="valorPagamento"
+                  name="value"
+                  value={this.state.createPayment.value}
+                  onChange={e => this.changeCreatePayment(e)}
+                  placeholder="Informe o valor"
+                  />
+                  { this.state.createPaymentErrors.value && <span className="alertInput">O campo é obrigatório </span>}
                 </FormGroup>
                 <FormGroup>
                   <Label for="dataPagamento">Data do Pagamento</Label>
-                  <Input style = {{color: "#000"}} type="date" id="dtPagamento" onChange={e => this.state.createPayment.date = e.target.value} placeholder="Informe a data do pagamento" />
+                  <Input
+                  style={{color: "#000"}}
+                  type="date" id="dtPagamento"
+                  name="date"
+                  value={this.state.createPayment.date}
+                  onChange={e => this.changeCreatePayment(e)}
+                  placeholder="Informe a data do pagamento"
+                  />
+                  { this.state.createPaymentErrors.date && <span className="alertInput">O campo é obrigatório </span>}
                 </FormGroup>
-                <FormGroup>
-                  <Label for="Status">Status</Label>
-                  <Input style = {{color: "#000"}} type="text" id="statusPagamento" onChange={e => this.state.createPayment.status = e.target.value} placeholder="Informe o status" />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="Observação">Observação</Label>
-                  <Input style = {{color: "#000"}} type="text" id="observaçãoPagamento" onChange={e => this.state.createPayment.observation = e.target.value} placeholder="Informe uma observação" />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="categoria">categoria</Label>
-                  <Input style = {{color: "#000"}} type="text" id="categoriaPagamento" onChange={e => this.state.createPayment.category = e.target.value} placeholder="Informe uma categoria" />
-                </FormGroup>
-              </Form>
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" onClick={this.togglePaymentModal.bind(this)}>Cancelar</Button>
-              <Button color="primary" onClick={this.createAndBindPayment}>Adicionar</Button>
-            </ModalFooter>
-          </Modal>
-          <Modal isOpen={this.state.modalMoneyIsOpen} toggle={this.toggleMoneyModal}>
-            <ModalHeader toggle={this.toggleMoneyModal.bind(this)}>
-              Adicionar fatura
-                    </ModalHeader>
-            <ModalBody>
-              <Form>
-                <ModalBody>
-                  <Form>
-                    <FormGroup>
-                      <Label for="descrição">Descrição</Label>
-                      <Input style = {{color: "#000"}} type="text" id="descricaoMoney" onChange={e => this.state.createMoney.description = e.target.value} placeholder="Informe a descrição" />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label for="valor">Valor</Label>
-                      <Input style = {{color: "#000"}} type="text" id="valorMoney" onChange={e => this.state.createMoney.value = e.target.value} placeholder="Informe o valor" />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label for="dataMoney">Data da fatura</Label>
-                      <Input style = {{color: "#000"}} type="date" id="dtMoney" onChange={e => this.state.createMoney.date = e.target.value} placeholder="Informe a data da fatura" />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label for="Observação">Observação</Label>
-                      <Input style = {{color: "#000"}} type="text" id="observaçãoMoney" onChange={e => this.state.createMoney.observation = e.target.value} placeholder="Informe uma observação" />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label for="categoria">categoria</Label>
-                      <Input style = {{color: "#000"}} type="text" id="categoriaMoney" onChange={e => this.state.createMoney.category = e.target.value} placeholder="Informe uma categoria" />
-                    </FormGroup>
-                  </Form>
-                </ModalBody>
-              </Form>
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" onClick={this.toggleMoneyModal.bind(this)}>Cancelar</Button>
-              <Button color="primary" onClick={this.createAndBindMoney}>Adicionar</Button>
-            </ModalFooter>
-          </Modal>
-          <Modal isOpen={this.state.modalEditPaymentIsOpen} toggle={this.togleEditTablePayment}>
-            <ModalHeader toggle={this.togleEditTablePayment}>
-              Alterar pagamento
-                    </ModalHeader>
-            <ModalBody>
-              <Form>
-                <FormGroup>
-                  <Label for="descrição">Descrição</Label>
-                  <Input style = {{color: "#000"}} value = {this.state.tableAttributes[this.state.tableIndex]} type="text" id="descricaoPagamento" onChange={e => this.state.createPayment.description = e.target.value} placeholder="Informe a descrição" />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="valor">Valor</Label>
-                  <Input style = {{color: "#000"}} value = {this.state.tableAttributes[this.state.tableIndex]} type="text" id="valorPagamento" onChange={e => this.state.createPayment.value = e.target.value} placeholder="Informe o valor" />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="dataPagamento">Data do Pagamento</Label>
-                  <Input style = {{color: "#000"}} value = {this.state.tableAttributes[this.state.tableIndex]} type="date" id="dtPagamento" onChange={e => this.state.createPayment.date = e.target.value} placeholder="Informe a data do pagamento" />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="Status">Status</Label>
-                  <Input style = {{color: "#000"}} value = {this.state.tableAttributes[this.state.tableIndex]} type="text" id="statusPagamento" onChange={e => this.state.createPayment.status = e.target.value} placeholder="Informe o status" />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="Observação">Observação</Label>
-                  <Input style = {{color: "#000"}} value = {this.state.tableAttributes[this.state.tableIndex]} type="text" id="observaçãoPagamento" onChange={e => this.state.createPayment.observation = e.target.value} placeholder="Informe uma observação" />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="categoria">categoria</Label>
-                  <Input style = {{color: "#000"}} value = {this.state.tableAttributes[this.state.tableIndex]} type="text" id="categoriaPagamento" onChange={e => this.state.createPayment.category = e.target.value} placeholder="Informe uma categoria" />
-                </FormGroup>
-              </Form>
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" onClick={this.toggleEditTablePayment.bind(this)}>Cancelar</Button>
-              <Button color="primary" onClick={this.createAndBindPayment}>Adicionar</Button>
-            </ModalFooter>
-          </Modal>
-          <Modal isOpen={this.state.modalEditMoneyIsOpen} toggle={this.toggleEditTableMoney}>
-            <ModalHeader toggle={this.toggleEditTableMoney.bind(this)}>
-              Alterar Fatura
-                    </ModalHeader>
-            <ModalBody>
-              <Form>
-                <FormGroup>
-                  <Label for="descrição">Descrição</Label>
-                  <Input style = {{color: "#000"}} type="text" id="descricaoPagamento" onChange={e => this.state.createPayment.description = e.target.value} placeholder="Informe a descrição" />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="valor">Valor</Label>
-                  <Input style = {{color: "#000"}} type="text" id="valorPagamento" onChange={e => this.state.createPayment.value = e.target.value} placeholder="Informe o valor" />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="dataPagamento">Data do Pagamento</Label>
-                  <Input style = {{color: "#000"}} type="date" id="dtPagamento" onChange={e => this.state.createPayment.date = e.target.value} placeholder="Informe a data do pagamento" />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="Observação">Observação</Label>
-                  <Input style = {{color: "#000"}} type="text" id="observaçãoPagamento" onChange={e => this.state.createPayment.observation = e.target.value} placeholder="Informe uma observação" />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="categoria">categoria</Label>
-                  <Input style = {{color: "#000"}} type="text" id="categoriaPagamento" onChange={e => this.state.createPayment.category = e.target.value} placeholder="Informe uma categoria" />
-                </FormGroup>
-              </Form>
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" onClick={this.toggleEditTableMoney.bind(this)}>Cancelar</Button>
-              <Button color="primary" onClick={this.createAndBindMoney}>Alterar</Button>
-            </ModalFooter>
-          </Modal>
-        </div>
-      </>
-    );
-  }
-}
-
-export default Dashboard;
