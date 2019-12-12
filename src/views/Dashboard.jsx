@@ -217,7 +217,7 @@ class Dashboard extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-    fetch('https://stay-fish-backend.herokuapp.com/searchPaymentByYear', requestInfo)
+    fetch('https://stayfish-backend.herokuapp.com/searchPaymentByYear', requestInfo)
       .then(async response => {
         if (response.ok) {
           let payment = await response.json();
@@ -238,7 +238,7 @@ class Dashboard extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-    fetch('https://stay-fish-backend.herokuapp.com/searchMoneyByYear', requestInfo)
+    fetch('https://stayfish-backend.herokuapp.com/searchMoneyByYear', requestInfo)
       .then(async response => {
         if (response.ok) {
           let money = await response.json();
@@ -262,7 +262,7 @@ class Dashboard extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-    fetch('https://stay-fish-backend.herokuapp.com/addPayment', requestInfo)
+    fetch('https://stayfish-backend.herokuapp.com/addPayment', requestInfo)
       .then(async response => {
         if (response.ok) {
           await this.findPayment();
@@ -308,7 +308,7 @@ class Dashboard extends React.Component {
         }),
       };
       
-      fetch('http://localhost:8080/updatePayment', requestInfo)
+      fetch('https://stayfish-backend.herokuapp.com/updatePayment', requestInfo)
         .then(async response => {
           if (response.ok) {
             await this.initialLoader();
@@ -330,7 +330,7 @@ class Dashboard extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-    fetch('https://stay-fish-backend.herokuapp.com/addMoney', requestInfo)
+    fetch('https://stayfish-backend.herokuapp.com/addMoney', requestInfo)
       .then(async response => {
         if (response.ok) {
           await this.findMoney();
@@ -354,7 +354,7 @@ class Dashboard extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-    fetch('https://stay-fish-backend.herokuapp.com/balance', requestInfo)
+    fetch('https://stayfish-backend.herokuapp.com/balance', requestInfo)
       .then(async response => {
         if (response.ok) {
           let balance = await response.json();
@@ -401,7 +401,7 @@ class Dashboard extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-    fetch('https://stay-fish-backend.herokuapp.com/balance', requestInfo)
+    fetch('https://stayfish-backend.herokuapp.com/balance', requestInfo)
       .then(async response => {
         if (response.ok) {
           let balance = await response.json();
@@ -475,7 +475,7 @@ class Dashboard extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-    fetch('https://stay-fish-backend.herokuapp.com/searchPaymentByDate', requestInfo)
+    fetch('https://stayfish-backend.herokuapp.com/searchPaymentByDate', requestInfo)
       .then(async response => {
         if (response.ok) {
           let payment = await response.json();
@@ -498,7 +498,7 @@ class Dashboard extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-    fetch('https://stay-fish-backend.herokuapp.com/searchMoneyByDate', requestInfo)
+    fetch('https://stayfish-backend.herokuapp.com/searchMoneyByDate', requestInfo)
       .then(async response => {
         if (response.ok) {
           let money = await response.json();
@@ -520,7 +520,7 @@ class Dashboard extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-    fetch('http://localhost:8080/deletDebt', requestInfo)
+    fetch('https://stayfish-backend.herokuapp.com/deletDebt', requestInfo)
     .then(async response => {
 
       if (response.ok) {
@@ -555,7 +555,7 @@ class Dashboard extends React.Component {
         'Content-Type': 'application/json'
       }),
     };
-    fetch('http://localhost:8080/deletInvoice', requestInfo)
+    fetch('https://stayfish-backend.herokuapp.com/deletInvoice', requestInfo)
     .then(async response => {
       if(response.ok) {
         this.findMoney();
@@ -692,7 +692,7 @@ class Dashboard extends React.Component {
         }),
       };
       
-      fetch('http://localhost:8080/updateMoney', requestInfo)
+      fetch('https://stayfish-backend.herokuapp.com/updateMoney', requestInfo)
         .then(async response => {
           if (response.ok) {
             await this.initialLoader();
